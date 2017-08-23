@@ -1,0 +1,72 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.6.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    vaadinVersion = '8.1.0'
+}
+
+project.buildDir = 'build-gradle'
+
+// EndreXY: 2017-08-17: Added the shell executable thingy in front of the jar file. Evidently this changes with Boot 2.
+bootRepackage {
+    executable = true
+}
+
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-actuator-docs')
+    compile('com.vaadin:vaadin-spring-boot-starter')
+    compile('org.springframework.boot:spring-boot-starter-web')
+
+    // Deep Learning 4 Java
+    compile 'org.deeplearning4j:deeplearning4j-core:0.9.1'
+    // .. the ND4J implementation: Native
+    compile group: 'org.nd4j', name: 'nd4j-native-platform', version: '0.9.1'
+    // .. and the ND4J implementation: CUDA  (since both Native and CUDA are now present, evidently GPUs will be used if available)
+    compile group: 'org.nd4j', name: 'nd4j-cuda-8.0-platform', version: '0.9.1'
+    // .. along with the DL4J-CUDA add-on, which employs specialized 'cuDNN' constructs for CNNs (and later RNNs).
+    compile group: 'org.deeplearning4j', name: 'deeplearning4j-cuda-8.0', version: '0.9.1'
+
+    // JFreeChart, since the DL4J examples use it.
+    // https://mvnrepository.com/artifact/org.jfree/jfreechart
+    compile group: 'org.jfree', name: 'jfreechart', version: '1.0.19'
+
+    // Disruptor, to process the Quandl file
+    compile 'com.lmax:disruptor:3.+'  // 2017-08-21: 3.3.6
+
+    // Groovy
+    compile 'org.codehaus.groovy:groovy-all:2.4.+'
+
+    // DataBase
+    runtime('org.postgresql:postgresql')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+    }
+}
